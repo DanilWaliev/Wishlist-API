@@ -6,7 +6,7 @@ type RegisterRequest struct {
 }
 
 type RegisterResponse struct {
-	ID    int64  `json:"id"`
+	ID    uint32 `json:"id"`
 	Email string `json:"email"`
 }
 
@@ -32,7 +32,7 @@ type UpdateWishlistRequest struct {
 }
 
 type WishlistResponse struct {
-	ID          int64                  `json:"id"`
+	ID          uint32                 `json:"id"`
 	EventName   string                 `json:"event_name"`
 	Description string                 `json:"description"`
 	EventDate   string                 `json:"event_date"`
@@ -68,7 +68,7 @@ type WishlistItemResponse struct {
 }
 
 type PublicWishlistResponse struct {
-	ID          int64                  `json:"id"`
+	ID          uint32                 `json:"id"`
 	EventName   string                 `json:"event_name"`
 	Description string                 `json:"description"`
 	EventDate   string                 `json:"event_date"`
@@ -77,5 +77,5 @@ type PublicWishlistResponse struct {
 
 type ReserveItemResponse struct {
 	Message string `json:"message"`
-	ItemID  int64  `json:"item_id"`
+	ItemID  uint32 `json:"item_id"`
 }
