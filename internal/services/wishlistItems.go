@@ -12,7 +12,7 @@ import (
 type WishlistItemsRepo interface {
 	Create(ctx context.Context, item *models.WishlistItem) (uint32, error)
 	ReadByID(ctx context.Context, id uint32) (*models.WishlistItem, error)
-	ReadByWishlistID(ctx context.Context, wishlistID uint32) ([]models.WishlistItem, error)
+	ReadByWishlistID(ctx context.Context, wishlistID uint32) ([]*models.WishlistItem, error)
 	Update(ctx context.Context, item *models.WishlistItem) error
 	Delete(ctx context.Context, id uint32) error
 	Reserve(ctx context.Context, id uint32) error
@@ -123,7 +123,7 @@ func (s *WishlistItemsService) GetByWishlistID(
 
 	resp := make([]models.WishlistItemResponse, 0, len(items))
 	for i := range items {
-		resp = append(resp, *mapWishlistItemToResponse(&items[i]))
+		resp = append(resp, *mapWishlistItemToResponse(items[i]))
 	}
 
 	return resp, nil
