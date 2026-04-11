@@ -59,7 +59,7 @@ type UpdateWishlistItemRequest struct {
 }
 
 type WishlistItemResponse struct {
-	ID          int64  `json:"id"`
+	ID          uint32 `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	ProductURL  string `json:"product_url"`
