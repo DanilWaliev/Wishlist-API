@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -14,12 +13,14 @@ type Config struct {
 	DBName     string
 	DBUser     string
 	DBPassword string
+	AppPort    string
+	SecretKey  string
 }
 
-func Load() *Config {
+func Load() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("ошибка при считывании .env файла")
+		return nil, fmt.Errorf("ошибка при считывании .env файла\n")
 	}
 
 	return &Config{
@@ -28,7 +29,9 @@ func Load() *Config {
 		DBName:     os.Getenv("DB_NAME"),
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
-	}
+		AppPort:    os.Getenv("APP_PORT"),
+		SecretKey:  os.Getenv("SECRET_KEY"),
+	}, nil
 }
 
 func (c Config) DBURL() string {
