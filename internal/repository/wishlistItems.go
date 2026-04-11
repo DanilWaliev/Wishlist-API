@@ -169,3 +169,27 @@ func (r *WishlistItemsRepo) Delete(ctx context.Context, id uint32) error {
 
 	return nil
 }
+
+func (r *WishlistItemsRepo) Reserve(ctx context.Context, id uint32) error {
+	stmt := `
+		UPDATE wishlist_items
+		SET reserved = true
+		WHERE id = $1 AND reserved = false
+	`
+
+	res, err := r.db.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return fmt.Errorf("reserve wishlist item: %w", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("reserve rowsAffected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("item already reserved or not found")
+	}
+
+	return nil
+}
