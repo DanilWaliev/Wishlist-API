@@ -23,7 +23,7 @@ func NewWishlistsService(wlRepo WishlistsRepo) *WishlistsService {
 }
 
 type WishlistsRepo interface {
-	Create(ctx context.Context, w *models.Wishlist) error
+	Create(ctx context.Context, w *models.Wishlist) (uint32, error)
 	ReadByID(ctx context.Context, id uint32) (*models.Wishlist, error)
 	ReadByUserID(ctx context.Context, userId uint32) ([]*models.Wishlist, error)
 	Update(ctx context.Context, w *models.Wishlist) error
@@ -54,9 +54,12 @@ func (s *WishlistsService) Create(
 		UserID:      userID,
 	}
 
-	if err := s.wlRepo.Create(ctx, w); err != nil {
+	id, err := s.wlRepo.Create(ctx, w)
+	if err != nil {
 		return nil, fmt.Errorf("create wishlist: %w", err)
 	}
+
+	w.ID = id
 
 	return mapWishlistToResponse(w), nil
 }

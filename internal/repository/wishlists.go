@@ -18,16 +18,17 @@ func NewWishlistsRepo(db *sql.DB) *WishlistsRepo {
 	}
 }
 
-func (r *WishlistsRepo) Create(ctx context.Context, w *models.Wishlist) error {
+func (r *WishlistsRepo) Create(ctx context.Context, w *models.Wishlist) (uint32, error) {
 	stmt := `INSERT INTO wishlists (event_name, description, event_date, token, user_id)
-	VALUES($1, $2, $3, $4, $5)`
+	VALUES($1, $2, $3, $4, $5) RETURNING id`
 
-	_, err := r.db.ExecContext(ctx, stmt, w.EventName, w.Description, w.EventDate, w.Token, w.UserID)
+	var id uint32
+	err := r.db.QueryRowContext(ctx, stmt, w.EventName, w.Description, w.EventDate, w.Token, w.UserID).Scan(&id)
 	if err != nil {
-		return fmt.Errorf("create wishlist: %w", err)
+		return 0, fmt.Errorf("create wishlist: %w", err)
 	}
 
-	return nil
+	return id, nil
 }
 
 func (r *WishlistsRepo) ReadByID(ctx context.Context, id uint32) (*models.Wishlist, error) {
