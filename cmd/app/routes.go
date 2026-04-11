@@ -8,5 +8,11 @@ func routes(h *HTTPHandler) *http.ServeMux {
 	mux.HandleFunc("POST /register", h.authHandler.Register)
 	mux.HandleFunc("POST /login", h.authHandler.Login)
 
+	mux.Handle("GET /wishlists", h.authMW.RequireAuth(http.HandlerFunc(h.wishlistsHandler.GetByUserID)))
+	mux.Handle("POST /wishlists", h.authMW.RequireAuth(http.HandlerFunc(h.wishlistsHandler.Create)))
+	mux.Handle("GET /wishlists/{id}", h.authMW.RequireAuth(http.HandlerFunc(h.wishlistsHandler.GetByID)))
+	mux.Handle("PUT /wishlists/{id}", h.authMW.RequireAuth(http.HandlerFunc(h.wishlistsHandler.Update)))
+	mux.Handle("DELETE /wishlists/{id}", h.authMW.RequireAuth(http.HandlerFunc(h.wishlistsHandler.Delete)))
+
 	return mux
 }

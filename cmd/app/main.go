@@ -9,6 +9,7 @@ import (
 
 	"github.com/DanilWaliev/wishlist-api/internal/config"
 	"github.com/DanilWaliev/wishlist-api/internal/handlers"
+	"github.com/DanilWaliev/wishlist-api/internal/middleware"
 	"github.com/DanilWaliev/wishlist-api/internal/migrations"
 	"github.com/DanilWaliev/wishlist-api/internal/repository"
 	"github.com/DanilWaliev/wishlist-api/internal/services"
@@ -39,11 +40,17 @@ func main() {
 
 	// инициализация зависимостей
 	authRepo := repository.NewUserRepo(db)
+	wishlistsRepo := repository.NewWishlistsRepo(db)
+
 	authService := services.NewAuthService(authRepo, []byte(config.SecretKey))
+	wishlistsService := services.NewWishlistsService(wishlistsRepo)
+
+	authMW := middleware.NewAuthMiddleware(authService)
 	authHandler := handlers.NewAuthHandler(authService)
+	wishlistsHandler := handlers.NewWishlistsHandler(wishlistsService)
 
 	// сбор всех обработчиков в контейнер, передача в роутер и получение mux
-	h := NewHTTPHandler(authHandler)
+	h := NewHTTPHandler(authMW, authHandler, wishlistsHandler)
 	mux := routes(h)
 
 	// иницилизация структуры сервера

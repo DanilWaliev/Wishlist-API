@@ -1,14 +1,21 @@
 package main
 
-import "github.com/DanilWaliev/wishlist-api/internal/handlers"
+import (
+	"github.com/DanilWaliev/wishlist-api/internal/handlers"
+	"github.com/DanilWaliev/wishlist-api/internal/middleware"
+)
 
 // контейнер для всех HTTP обработчиков
 type HTTPHandler struct {
-	authHandler *handlers.AuthHandler
+	authMW           *middleware.AuthMiddleware
+	authHandler      *handlers.AuthHandler
+	wishlistsHandler *handlers.WishlistsHandler
 }
 
-func NewHTTPHandler(authHandler *handlers.AuthHandler) *HTTPHandler {
+func NewHTTPHandler(authMW *middleware.AuthMiddleware, authHandler *handlers.AuthHandler, wlHandler *handlers.WishlistsHandler) *HTTPHandler {
 	return &HTTPHandler{
-		authHandler: authHandler,
+		authMW:           authMW,
+		authHandler:      authHandler,
+		wishlistsHandler: wlHandler,
 	}
 }
