@@ -2,9 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/DanilWaliev/wishlist-api/internal/middleware"
@@ -153,20 +151,6 @@ func (h *WishlistsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{
 		"message": "wishlist deleted successfully",
 	})
-}
-
-func parseUint32PathValue(r *http.Request, key string) (uint32, error) {
-	raw := r.PathValue(key)
-	if raw == "" {
-		return 0, errors.New("empty path value")
-	}
-
-	id64, err := strconv.ParseUint(raw, 10, 32)
-	if err != nil {
-		return 0, err
-	}
-
-	return uint32(id64), nil
 }
 
 func mapWishlistServiceError(err error) int {

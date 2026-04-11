@@ -41,16 +41,19 @@ func main() {
 	// инициализация зависимостей
 	authRepo := repository.NewUserRepo(db)
 	wishlistsRepo := repository.NewWishlistsRepo(db)
+	wlItemsRepo := repository.NewWishlistItemsRepo(db)
 
 	authService := services.NewAuthService(authRepo, []byte(config.SecretKey))
 	wishlistsService := services.NewWishlistsService(wishlistsRepo)
+	wlItemsService := services.NewWishlistItemsService(wlItemsRepo, wishlistsRepo)
 
 	authMW := middleware.NewAuthMiddleware(authService)
 	authHandler := handlers.NewAuthHandler(authService)
 	wishlistsHandler := handlers.NewWishlistsHandler(wishlistsService)
+	wlItemsHandler := handlers.NewWishlistItemsHandler(wlItemsService)
 
 	// сбор всех обработчиков в контейнер, передача в роутер и получение mux
-	h := NewHTTPHandler(authMW, authHandler, wishlistsHandler)
+	h := NewHTTPHandler(authMW, authHandler, wishlistsHandler, wlItemsHandler)
 	mux := routes(h)
 
 	// иницилизация структуры сервера
