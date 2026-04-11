@@ -39,7 +39,7 @@ func main() {
 
 	// инициализация зависимостей
 	authRepo := repository.NewUserRepo(db)
-	authService := services.NewAuthService(authRepo)
+	authService := services.NewAuthService(authRepo, []byte(config.SecretKey))
 	authHandler := handlers.NewAuthHandler(authService)
 
 	// сбор всех обработчиков в контейнер, передача в роутер и получение mux
