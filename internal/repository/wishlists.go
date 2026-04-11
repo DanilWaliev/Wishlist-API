@@ -18,28 +18,16 @@ func NewWishlistsRepo(db *sql.DB) *WishlistsRepo {
 	}
 }
 
-func (r *WishlistItemsRepo) Create(ctx context.Context, item *models.WishlistItem) (uint32, error) {
-	stmt := `
-		INSERT INTO wishlist_items (title, description, product_url, priority, reserved, wishlist_id)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id
-	`
+func (r *WishlistsRepo) Create(ctx context.Context, w *models.Wishlist) (uint32, error) {
+	stmt := `INSERT INTO wishlists (event_name, description, event_date, token, user_id)
+	VALUES($1, $2, $3, $4, $5) RETURNING id`
 
 	var id uint32
-
-	err := r.db.QueryRowContext(
-		ctx,
-		stmt,
-		item.Title,
-		item.Description,
-		item.ProductURL,
-		item.Priority,
-		item.Reserved,
-		item.WishlistID,
-	).Scan(&id)
-
+	err := r.db.QueryRowContext(ctx, stmt, w.EventName, w.Description, w.EventDate, w.Token, w.UserID).Scan(&id)
 	if err != nil {
-		return 0, fmt.Errorf("create wishlist item: %w", err)
+
+		
+		return 0, fmt.Errorf("create wishlist: %w", err)
 	}
 
 	return id, nil
