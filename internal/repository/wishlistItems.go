@@ -193,3 +193,29 @@ func (r *WishlistItemsRepo) Reserve(ctx context.Context, id uint32) error {
 
 	return nil
 }
+
+func (r *WishlistsRepo) ReadByToken(ctx context.Context, token string) (*models.Wishlist, error) {
+	stmt := `
+		SELECT id, event_name, description, event_date, token, user_id
+		FROM wishlists
+		WHERE token = $1
+	`
+
+	row := r.db.QueryRowContext(ctx, stmt, token)
+
+	w := &models.Wishlist{}
+
+	err := row.Scan(
+		&w.ID,
+		&w.EventName,
+		&w.Description,
+		&w.EventDate,
+		&w.Token,
+		&w.UserID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("read wishlist by token: %w", err)
+	}
+
+	return w, nil
+}

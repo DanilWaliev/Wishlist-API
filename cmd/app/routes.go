@@ -21,6 +21,7 @@ func routes(h *HTTPHandler) *http.ServeMux {
 	mux.Handle("DELETE /wishlists/{id}/items/{itemId}", h.authMW.RequireAuth(http.HandlerFunc(h.wlItemsHandler.Delete)))
 
 	mux.HandleFunc("POST /public/{token}/reserve/{itemId}", h.wlItemsHandler.Reserve)
+	mux.HandleFunc("GET /public/{token}", h.wishlistsHandler.GetPublic)
 
 	return mux
 }

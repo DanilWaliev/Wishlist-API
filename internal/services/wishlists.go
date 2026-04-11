@@ -13,12 +13,14 @@ import (
 )
 
 type WishlistsService struct {
-	wlRepo WishlistsRepo
+	wlRepo    WishlistsRepo
+	itemsRepo WishlistItemsRepo
 }
 
-func NewWishlistsService(wlRepo WishlistsRepo) *WishlistsService {
+func NewWishlistsService(wlRepo WishlistsRepo, itemsRepo WishlistItemsRepo) *WishlistsService {
 	return &WishlistsService{
-		wlRepo: wlRepo,
+		wlRepo:    wlRepo,
+		itemsRepo: itemsRepo,
 	}
 }
 
@@ -28,6 +30,7 @@ type WishlistsRepo interface {
 	ReadByUserID(ctx context.Context, userId uint32) ([]*models.Wishlist, error)
 	Update(ctx context.Context, w *models.Wishlist) error
 	Delete(ctx context.Context, id uint32) error
+	ReadByToken(ctx context.Context, token string) (*models.Wishlist, error)
 }
 
 func (s *WishlistsService) Create(
@@ -162,6 +165,46 @@ func (s *WishlistsService) Delete(
 	}
 
 	return nil
+}
+
+func (s *WishlistsService) GetPublicByToken(
+	ctx context.Context,
+	token string,
+) (*models.PublicWishlistResponse, error) {
+
+	w, err := s.wlRepo.ReadByToken(ctx, token)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("wishlist not found")
+		}
+		return nil, fmt.Errorf("read wishlist by token: %w", err)
+	}
+
+	items, err := s.itemsRepo.ReadByWishlistID(ctx, w.ID)
+	if err != nil {
+		return nil, fmt.Errorf("read wishlist items: %w", err)
+	}
+
+	respItems := make([]models.WishlistItemResponse, 0, len(items))
+
+	for i := range items {
+		respItems = append(respItems, models.WishlistItemResponse{
+			ID:          items[i].ID,
+			Title:       items[i].Title,
+			Description: items[i].Description,
+			ProductURL:  items[i].ProductURL,
+			Priority:    items[i].Priority,
+			Reserved:    items[i].Reserved,
+		})
+	}
+
+	return &models.PublicWishlistResponse{
+		ID:          w.ID,
+		EventName:   w.EventName,
+		Description: w.Description,
+		EventDate:   w.EventDate.Format("2006-01-02"),
+		Items:       respItems,
+	}, nil
 }
 
 // вспомогательные функции

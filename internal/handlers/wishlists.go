@@ -153,6 +153,26 @@ func (h *WishlistsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (h *WishlistsHandler) GetPublic(w http.ResponseWriter, r *http.Request) {
+	token := strings.TrimSpace(r.PathValue("token"))
+	if token == "" {
+		writeError(w, http.StatusBadRequest, "invalid token")
+		return
+	}
+
+	resp, err := h.service.GetPublicByToken(r.Context(), token)
+	if err != nil {
+		if err.Error() == "wishlist not found" {
+			writeError(w, http.StatusNotFound, err.Error())
+			return
+		}
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+}
+
 func mapWishlistServiceError(err error) int {
 	switch err.Error() {
 	case "wishlist not found":

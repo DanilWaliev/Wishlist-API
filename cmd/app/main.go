@@ -44,7 +44,7 @@ func main() {
 	wlItemsRepo := repository.NewWishlistItemsRepo(db)
 
 	authService := services.NewAuthService(authRepo, []byte(config.SecretKey))
-	wishlistsService := services.NewWishlistsService(wishlistsRepo)
+	wishlistsService := services.NewWishlistsService(wishlistsRepo, wlItemsRepo)
 	wlItemsService := services.NewWishlistItemsService(wlItemsRepo, wishlistsRepo)
 
 	authMW := middleware.NewAuthMiddleware(authService)
