@@ -16,6 +16,12 @@ type WishlistsService struct {
 	wlRepo WishlistsRepo
 }
 
+func NewWishlistsService(wlRepo WishlistsRepo) *WishlistsService {
+	return &WishlistsService{
+		wlRepo: wlRepo,
+	}
+}
+
 type WishlistsRepo interface {
 	Create(ctx context.Context, w *models.Wishlist) error
 	ReadByID(ctx context.Context, id uint32) (*models.Wishlist, error)

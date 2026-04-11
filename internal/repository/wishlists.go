@@ -46,7 +46,7 @@ func (r *WishlistsRepo) ReadByID(ctx context.Context, id uint32) (*models.Wishli
 	return w, nil
 }
 
-func (r *WishlistsRepo) ReadByUserID(ctx context.Context, userID uint32) ([]models.Wishlist, error) {
+func (r *WishlistsRepo) ReadByUserID(ctx context.Context, userID uint32) ([]*models.Wishlist, error) {
 	stmt := `
 		SELECT id, event_name, description, event_date, token, user_id
 		FROM wishlists
@@ -60,7 +60,7 @@ func (r *WishlistsRepo) ReadByUserID(ctx context.Context, userID uint32) ([]mode
 	}
 	defer rows.Close()
 
-	wishlists := make([]models.Wishlist, 0)
+	wishlists := make([]*models.Wishlist, 0)
 
 	for rows.Next() {
 		var w models.Wishlist
@@ -77,7 +77,7 @@ func (r *WishlistsRepo) ReadByUserID(ctx context.Context, userID uint32) ([]mode
 			return nil, fmt.Errorf("scan wishlist: %w", err)
 		}
 
-		wishlists = append(wishlists, w)
+		wishlists = append(wishlists, &w)
 	}
 
 	if err := rows.Err(); err != nil {
