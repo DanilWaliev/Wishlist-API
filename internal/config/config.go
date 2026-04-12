@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -20,7 +21,7 @@ type Config struct {
 func Load() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при считывании .env файла\n")
+		log.Printf("ошибка при считывании .env файла\n")
 	}
 
 	return &Config{
